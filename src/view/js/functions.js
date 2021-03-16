@@ -364,23 +364,26 @@
         // show and hide forms
         function collapseActions(){
 
+            $(document).ready(function(){
 
-            $(".btnCreate").on("click", function() {
+                $(".btnCreate").on("click", function() {
 
-                $("#collapseFormCreate").show(500);
-                $("#collapseFormUpdate").hide();  
-            });
-
-            setTimeout(function(){
-
-                $(".btnUpdate").on("click", function() {
-
-                    $("#collapseFormUpdate").show(500);
-                    $("#collapseFormCreate").hide();
-
+                    $("#collapseFormCreate").show(500);
+                    $("#collapseFormUpdate").hide();  
                 });
 
-            }, 1000);
+                setTimeout(function(){
+
+                    $(".btnUpdate").on("click", function() {
+
+                        $("#collapseFormUpdate").show(500);
+                        $("#collapseFormCreate").hide();
+
+                    });
+
+                }, 2000);
+
+            });
 
         }
 
