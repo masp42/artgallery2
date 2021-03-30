@@ -10,104 +10,112 @@
 
         var responseFromAPI = ''
 
-        async function listAll() {
-       
-            // requisition of data contained in the link "APIUrl" using lib axios through the GET method
-            await axios.get(APIUrl).then(response => {
 
-                if(response.data === false || response.data.data.length == 0){
-                    document.getElementById("tableListAll").innerHTML =  'No data found. Click in Insert data button to create register';
-                }
-                else{
+        async function listAll(){
 
-                    let allData = response.data.data;  
-                    let timestamp = new Date().getTime();
-    
-     
-                    //Insert new fields, sort and remove others
-                    for(let i=0; i < allData.length; i++){ 
+            await fetch(APIUrl)
+                .then(function(response){
 
-                        allData[i] = allData[i].attributes
-    
-                        allData[i].painting = `
-                            <a href="`+baseUrl+'/'+allData[i].image+`?date=`+allData[i].updated+`">
-                                <img src="`+baseUrl+'/'+allData[i].image+`?date=`+allData[i].updated+`" class="tableImage">
-                            </a>
-                        `
-    
-                        allData[i].name = allData[i].title
-    
-     
-                        allData[i].actions = `
-                            <a href="#updatePainting" class="btnUpdate" onclick="listOne(`+allData[i].painting_id+`)">Edit</a> - 
-                            <a href="javascript:void(0);" onclick="deleteOne(`+allData[i].painting_id+`)">Delete</a>
-                        `
-                        //  removes the properties below from the object
-                        delete allData[i].description; 
-                        delete allData[i].artist_name;
-                        delete allData[i].artist_country;  
-                        delete allData[i].artist_period; 
-                        delete allData[i].created; 
-                        delete allData[i].updated; 
-                        delete allData[i].painting_id; 
-                        delete allData[i].title; 
-                        delete allData[i].image; 
-    
-                    }
-    
-                    const listData = allData         
-        
-    
-                    // EXTRACT VALUE FOR HTML TABLE HEADER. 
-                    let col = [];
-                    for (let i = 0; i < listData.length; i++) {
-                        for (let key in listData[i]) {
-                            if (col.indexOf(key) === -1) {
-                                col.push(key);
+                    let status = response.status;
+
+                    response.json().then(function(data){
+
+                        if(data === false || data.data.length == 0){
+                            document.getElementById("tableListAll").innerHTML =  'No data found. Click in Insert data button to create register';
+                        }
+                        else{
+
+                            let allData =data.data;  
+                            let timestamp = new Date().getTime();
+            
+            
+                            //Insert new fields, sort and remove others
+                            for(let i=0; i < allData.length; i++){ 
+
+                                allData[i] = allData[i].attributes
+            
+                                allData[i].painting = `
+                                    <a href="`+baseUrl+'/'+allData[i].image+`?date=`+allData[i].updated+`">
+                                        <img src="`+baseUrl+'/'+allData[i].image+`?date=`+allData[i].updated+`" class="tableImage">
+                                    </a>
+                                `
+            
+                                allData[i].name = allData[i].title
+            
+            
+                                allData[i].actions = `
+                                    <a href="#updatePainting" class="btnUpdate" onclick="listOne(`+allData[i].painting_id+`)">Edit</a> - 
+                                    <a href="javascript:void(0);" onclick="deleteOne(`+allData[i].painting_id+`)">Delete</a>
+                                `
+                                //  removes the properties below from the object
+                                delete allData[i].description; 
+                                delete allData[i].artist_name;
+                                delete allData[i].artist_country;  
+                                delete allData[i].artist_period; 
+                                delete allData[i].created; 
+                                delete allData[i].updated; 
+                                delete allData[i].painting_id; 
+                                delete allData[i].title; 
+                                delete allData[i].image; 
+            
                             }
+            
+                            const listData = allData         
+                
+            
+                            // EXTRACT VALUE FOR HTML TABLE HEADER. 
+                            let col = [];
+                            for (let i = 0; i < listData.length; i++) {
+                                for (let key in listData[i]) {
+                                    if (col.indexOf(key) === -1) {
+                                        col.push(key);
+                                    }
+                                }
+                            }
+            
+                            // CREATE DYNAMIC TABLE.
+                            let table = document.createElement("table");
+                            table.classList.add('table');
+                            table.classList.add('table-striped');
+            
+            
+                            // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+            
+                            
+                            let tr = table.insertRow(-1);                   // TABLE ROW.
+            
+                            for (let i = 0; i < col.length; i++) {
+                                let th = document.createElement("th");      // TABLE HEADER.
+            
+                                th.innerHTML = col[i];  
+                                tr.appendChild(th);
+                            }
+            
+                            // ADD JSON DATA TO THE TABLE AS ROWS.
+                            for (let i = 0; i < listData.length; i++) {
+            
+                                tr = table.insertRow(-1);
+            
+                                for (let j = 0; j < col.length; j++) {
+                                    let tabCell = tr.insertCell(-1);
+                                    tabCell.innerHTML = listData[i][col[j]];
+                                }
+                            }
+            
+            
+                            // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER
+                            let divContainer = document.getElementById("tableListAll");
+                            divContainer.innerHTML = "";
+                            divContainer.appendChild(table);
+            
                         }
-                    }
-    
-                    // CREATE DYNAMIC TABLE.
-                    let table = document.createElement("table");
-                    table.classList.add('table');
-                    table.classList.add('table-striped');
-    
-    
-                    // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
-    
-                    
-                    let tr = table.insertRow(-1);                   // TABLE ROW.
-    
-                    for (let i = 0; i < col.length; i++) {
-                        let th = document.createElement("th");      // TABLE HEADER.
-    
-                        th.innerHTML = col[i];  
-                        tr.appendChild(th);
-                    }
-    
-                    // ADD JSON DATA TO THE TABLE AS ROWS.
-                    for (let i = 0; i < listData.length; i++) {
-    
-                        tr = table.insertRow(-1);
-    
-                        for (let j = 0; j < col.length; j++) {
-                            let tabCell = tr.insertCell(-1);
-                            tabCell.innerHTML = listData[i][col[j]];
-                        }
-                    }
-    
-    
-                    // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER
-                    let divContainer = document.getElementById("tableListAll");
-                    divContainer.innerHTML = "";
-                    divContainer.appendChild(table);
-    
-                }
+                    });
+            })
+            .catch(function(error){ 
+                    console.log(error)
+            });
 
-            }).catch(error => console.error(error));
- 
-        }
+        }   
 
 
 
@@ -115,25 +123,32 @@
 
             let timestamp = new Date().getTime();
 
-            // requisition of data contained in the link "APIUrl+'/'+id" using lib axios through the GET method
-            await axios.get(APIUrl+'/'+id)
-            .then(response => {
-                //change the values of inputs and image src to response data from API
-                document.querySelector("#updatePaintingId").value = response.data.data[0].attributes.painting_id
+            await fetch(APIUrl+'/'+id)
+                .then(function(response){
 
-                document.querySelector("#image_updateImage").src = baseUrl+'/'+response.data.data[0].attributes.image+'?date='+ response.data.data[0].attributes.updated
+                    let status = response.status;
+ 
+                    response.json().then(function(data){ 
+     
+                        //change the values of inputs and image src to response data from API
+                        document.querySelector("#updatePaintingId").value = data.data[0].attributes.painting_id
 
-                document.querySelector("#updateTitle").value = response.data.data[0].attributes.title
-                document.querySelector("#updateDescription").value = response.data.data[0].attributes.description
-                document.querySelector("#updateArtistName").value = response.data.data[0].attributes.artist_name
-                document.querySelector("#updateArtistCountry").value = response.data.data[0].attributes.artist_country
-                document.querySelector("#updateArtistPeriod").value = response.data.data[0].attributes.artist_period
+                        document.querySelector("#image_updateImage").src = baseUrl+'/'+data.data[0].attributes.image+'?date='+ data.data[0].attributes.updated
 
-
-            }).catch(error => console.error(error));
+                        document.querySelector("#updateTitle").value = data.data[0].attributes.title
+                        document.querySelector("#updateDescription").value = data.data[0].attributes.description
+                        document.querySelector("#updateArtistName").value = data.data[0].attributes.artist_name
+                        document.querySelector("#updateArtistCountry").value = data.data[0].attributes.artist_country
+                        document.querySelector("#updateArtistPeriod").value = data.data[0].attributes.artist_period
+                        
+                    });
+                })
+                .catch(function(error){ 
+                    console.log(error)
+                
+                });
             
         }
-
 
 
 
