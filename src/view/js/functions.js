@@ -482,7 +482,6 @@
                             </div>
                             `
                         }
-
                         document.getElementById("listAll").innerHTML = listData;
                     
                     });
