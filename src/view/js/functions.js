@@ -5,7 +5,7 @@
         var currentHost = getCurrentHost(currentUrl)
         var baseUrl = currentHost; 
 
-        var pathAPI = '/api/paintings';
+        var pathAPI = '/api/canvas';
         var APIUrl = baseUrl+pathAPI;
 
         var responseFromAPI = ''
@@ -44,8 +44,8 @@
             
             
                                 allData[i].actions = `
-                                    <a href="#updatePainting" class="btnUpdate" onclick="listOne(`+allData[i].painting_id+`)">Edit</a> - 
-                                    <a href="javascript:void(0);" onclick="deleteOne(`+allData[i].painting_id+`)">Delete</a>
+                                    <a href="#updatePainting" class="btnUpdate" onclick="listOne(`+allData[i].canvas_id+`)">Edit</a> - 
+                                    <a href="javascript:void(0);" onclick="deleteOne(`+allData[i].canvas_id+`)">Delete</a>
                                 `
                                 //  removes the properties below from the object
                                 delete allData[i].description; 
@@ -54,7 +54,7 @@
                                 delete allData[i].artist_period; 
                                 delete allData[i].created; 
                                 delete allData[i].updated; 
-                                delete allData[i].painting_id; 
+                                delete allData[i].canvas_id; 
                                 delete allData[i].title; 
                                 delete allData[i].image; 
             
@@ -131,7 +131,7 @@
                     response.json().then(function(data){ 
      
                         //change the values of inputs and image src to response data from API
-                        document.querySelector("#updatePaintingId").value = data.data[0].attributes.painting_id
+                        document.querySelector("#updatePaintingId").value = data.data[0].attributes.canvas_id
 
                         document.querySelector("#image_updateImage").src = baseUrl+'/'+data.data[0].attributes.image+'?date='+ data.data[0].attributes.updated
 
