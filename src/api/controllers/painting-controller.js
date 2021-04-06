@@ -27,12 +27,12 @@ exports.getPaintingDetail = async (req, res, next)=> {
 
         await PaintingsModel.generateDirectories()
 
-        let painting_id = '';
+        let canvas_id = '';
 
         //varify if id from front-end is valid
-        if(req.params.painting_id > 0){
+        if(req.params.canvas_id > 0){
             //sanitize data from form
-            painting_id = sanitize(req.params.painting_id);
+            canvas_id = sanitize(req.params.canvas_id);
         }
         else{
             //error message
@@ -40,8 +40,8 @@ exports.getPaintingDetail = async (req, res, next)=> {
         }
 
 
-        //Call model function getPaintingDetail(painting_id)
-        const result = await PaintingsModel.getPaintingDetail(painting_id);
+        //Call model function getPaintingDetail(canvas_id)
+        const result = await PaintingsModel.getPaintingDetail(canvas_id);
             
         //if not found register
         if (!result) {
@@ -71,7 +71,7 @@ exports.createPainting = async (req, res, next) => {
 
         //GENERATE ID with timestamp
         let d = new Date();
-        newRegisterData.painting_id = d.getTime();
+        newRegisterData.canvas_id = d.getTime();
 
         //sanitize all data from form 
         newRegisterData.title = sanitize(req.body.title)
@@ -108,14 +108,18 @@ exports.createPainting = async (req, res, next) => {
             newRegisterData.image = generateBlankBase64Image();
         }
 
+        /*
         //verify if base64 string is valid
         if(isBase64(newRegisterData.image, {allowMime: true})){
-            //create file with painting_id to generate name and image(base64_string)
-            newRegisterData.image = await PaintingsModel.base64ToImage(newRegisterData.painting_id, newRegisterData.image)
+            //create file with canvas_id to generate name and image(base64_string)
+            newRegisterData.image = await PaintingsModel.base64ToImage(newRegisterData.canvas_id, newRegisterData.image)
         }
         else{
             return res.status(500).send({error: 'base64 image is not valid'})
         }
+        */
+
+        newRegisterData.image = await PaintingsModel.base64ToImage(newRegisterData.canvas_id, newRegisterData.image)
         
 
         //call function to insert data
@@ -129,7 +133,7 @@ exports.createPainting = async (req, res, next) => {
                 const response = {
                     message: 'Painting created sucessfully',
                     createdPainting: {
-                        painting_id: newRegisterData.painting_id,
+                        canvas_id: newRegisterData.canvas_id,
                         title: newRegisterData.title,
                         description: newRegisterData.description,
                         name: newRegisterData.artist_name,
@@ -168,18 +172,18 @@ exports.updatePainting = async (req, res, next) => {
 
         let result = false;
 
-        let painting_id = '';
+        let canvas_id = '';
 
         //verify if id from front-end is valid
-        if(req.params.painting_id > 0){
-            painting_id = sanitize(req.params.painting_id);
+        if(req.params.canvas_id > 0){
+            canvas_id = sanitize(req.params.canvas_id);
         }
         else{
             return res.status(500).send({error: 'ID not defined'})
         }
 
-        //Verify if registers with this painting_id exists
-        const findPainting = await PaintingsModel.getPaintingDetail(painting_id);
+        //Verify if registers with this canvas_id exists
+        const findPainting = await PaintingsModel.getPaintingDetail(canvas_id);
 
         //If register exists
         if(findPainting !== null){
@@ -187,7 +191,7 @@ exports.updatePainting = async (req, res, next) => {
             newRegisterData = {}
 
 
-            newRegisterData.painting_id = painting_id;
+            newRegisterData.canvas_id = canvas_id;
 
 
             // if data from form is equals data from json file
@@ -252,7 +256,7 @@ exports.updatePainting = async (req, res, next) => {
                 const newImage = sanitize(req.body.image);
 
                 if(isBase64(newImage, {allowMime: true})){
-                   await PaintingsModel.base64ToImage(painting_id, newImage)
+                   await PaintingsModel.base64ToImage(canvas_id, newImage)
                 }
                 else{
                     return res.status(500).send({error: 'base64 image is not valid'})
@@ -265,7 +269,7 @@ exports.updatePainting = async (req, res, next) => {
 
 
             //Delete
-            const deleteRegister = await PaintingsModel.deletePainting(painting_id);
+            const deleteRegister = await PaintingsModel.deletePainting(canvas_id);
             
             //Create
             const result = await PaintingsModel.createPainting(newRegisterData);
@@ -274,7 +278,7 @@ exports.updatePainting = async (req, res, next) => {
             const response = {
                 message: 'Painting updated sucessfully',
                 updatedPainting: {
-                    painting_id: painting_id,
+                    canvas_id: canvas_id,
                     title: newRegisterData.title,
                     description: newRegisterData.description,
                     name: newRegisterData.artist_name,
@@ -283,7 +287,7 @@ exports.updatePainting = async (req, res, next) => {
                     image: newRegisterData.image,
                     request: {
                         type: 'GET',
-                        description: 'Return painting with id '+painting_id,
+                        description: 'Return painting with id '+canvas_id,
                         url: link
                     }
                 }
@@ -292,7 +296,7 @@ exports.updatePainting = async (req, res, next) => {
 
         }
         else{
-            return res.status(404).send({ error: 'Painting with ID '+painting_id+' not found' });
+            return res.status(404).send({ error: 'Painting with ID '+canvas_id+' not found' });
         }
 
 
@@ -311,29 +315,29 @@ exports.updatePainting = async (req, res, next) => {
 exports.deletePainting = async (req, res, next) => {
     try {
 
-        let painting_id = '';
+        let canvas_id = '';
 
-        if(req.params.painting_id > 0){
-            painting_id = sanitize(req.params.painting_id);
+        if(req.params.canvas_id > 0){
+            canvas_id = sanitize(req.params.canvas_id);
         }
         else{
             return res.status(500).send({error: 'ID not defined'})
         }
 
         //verify id registers exists
-        const findPainting = await PaintingsModel.getPaintingDetail(painting_id);
+        const findPainting = await PaintingsModel.getPaintingDetail(canvas_id);
         if(!findPainting){
-            return res.status(404).send({ error: 'Painting with ID '+painting_id+' not found' });
+            return res.status(404).send({ error: 'Painting with ID '+canvas_id+' not found' });
         }
 
         //cal function to delete register
-        const result = await PaintingsModel.deletePainting(painting_id);
+        const result = await PaintingsModel.deletePainting(canvas_id);
   
 
         if(result){
             //call  function to delete image file from server
-            await PaintingsModel.removeImageFromServer(painting_id)
-            return res.status(200).send({message: 'Painting with ID '+painting_id+' was successfully deleted'});
+            await PaintingsModel.removeImageFromServer(canvas_id)
+            return res.status(200).send({message: 'Painting with ID '+canvas_id+' was successfully deleted'});
         }
 
     } catch (error) {
@@ -376,9 +380,9 @@ function isEmpty(value) {
 
   //Function to format data into json
 const transformer = painting => ({
-    type: 'paintings',
+    type: 'canvas',
     attributes: {
-        painting_id: painting.painting_id,
+        canvas_id: painting.canvas_id,
         title: painting.title,
         description: painting.description,
         artist_name: painting.artist_name,
@@ -389,7 +393,7 @@ const transformer = painting => ({
         updated: painting.updated
     },
     links: {
-        self: `/api/paintings/${painting.painting_id}`
+        self: `/api/canvas/${painting.canvas_id}`
     }
 }); 
 

@@ -1,7 +1,5 @@
 const db = require('../database') //Use MongoDb database with Mongoose ORM
 const fs = require('fs') //require file system nodeJs module
-const paintingsJsonFile = 'src/api/json/paintings.json'; //Define path tp json file
-
 
 //get current date in usual format
 const getDateTime = exports.getDateTime = function() {
@@ -20,7 +18,7 @@ const getDateTime = exports.getDateTime = function() {
 
 //Define model to generate database and collection automatically
 const paintingSchema = db.Schema({
-    painting_id: { type: String, unique: true, required: true, trim: true },
+    canvas_id: { type: String, unique: true, required: true, trim: true },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
     artist_name: { type: String, required: true, trim: true },
@@ -32,12 +30,12 @@ const paintingSchema = db.Schema({
 });
 
 //Generate Collection product
-const Painting = db.model('paintings', paintingSchema);
+const Painting = db.model('canvas', paintingSchema);
 
 //function to get all registers
 exports.getPaintings = async function() {
     try {
-        const data = await Painting.find().sort({painting_id: -1})
+        const data = await Painting.find().sort({canvas_id: -1})
         return data;
         
     } catch(error){
@@ -48,10 +46,10 @@ exports.getPaintings = async function() {
 
 
 //function to get one register by property id
-exports.getPaintingDetail = async function(painting_id) {
+exports.getPaintingDetail = async function(canvas_id) {
     try {
 
-        const data = await Painting.findOne({ painting_id: painting_id }).exec();
+        const data = await Painting.findOne({ canvas_id: canvas_id }).exec();
         return data;
  
     } catch(error){
@@ -66,7 +64,7 @@ exports.getPaintingDetail = async function(painting_id) {
 exports.getPaintingByTitle = async function(title) {
     try {
 
-        const data = await Painting.findOne({ title: title }, 'painting_id title').exec();
+        const data = await Painting.findOne({ title: title }, 'canvas_id title').exec();
 
         if(data !== null){
             return true
@@ -105,9 +103,9 @@ exports.createPainting = async function(newRegisterData) {
 
 
 //function to update register with object send from form
-exports.updatePainting = async function(painting_id,  newRegisterData) {
+exports.updatePainting = async function(canvas_id,  newRegisterData) {
     try {
-        const data = await Painting.findOneAndUpdate(painting_id, newRegisterData, {
+        const data = await Painting.findOneAndUpdate(canvas_id, newRegisterData, {
             returnOriginal: false
           });
         return true
@@ -120,10 +118,10 @@ exports.updatePainting = async function(painting_id,  newRegisterData) {
 
 
 //function to delete one register by id
-exports.deletePainting = async function(painting_id) {
+exports.deletePainting = async function(canvas_id) {
     try {
 
-        const data = await Painting.deleteOne({ painting_id: painting_id }).exec();
+        const data = await Painting.deleteOne({ canvas_id: canvas_id }).exec();
 
         if(data !== null){
             return true

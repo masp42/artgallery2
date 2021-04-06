@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.use('/api/paintings', paintingRoute);
+app.use('/api/canvas', paintingRoute);
 //if route nor found
 app.use((req, res, next) => {
     const error = new Error('Not found');
