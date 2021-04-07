@@ -255,14 +255,20 @@ exports.updatePainting = async (req, res, next) => {
 
                 const newImage = sanitize(req.body.image);
 
+                /*
                 if(isBase64(newImage, {allowMime: true})){
                    await PaintingsModel.base64ToImage(canvas_id, newImage)
                 }
                 else{
                     return res.status(500).send({error: 'base64 image is not valid'})
                 }
+                */
+
+                await PaintingsModel.base64ToImage(canvas_id, newImage)
 
             }
+
+            
 
 
             newRegisterData.updated = PaintingsModel.getDateTime();
