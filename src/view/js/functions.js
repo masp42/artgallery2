@@ -121,6 +121,9 @@
 
         async function listOne(id) {
 
+            $("#collapseFormUpdate").show(500);
+            $("#collapseFormCreate").hide();
+
             let timestamp = new Date().getTime();
 
             await fetch(APIUrl+'/'+id)
